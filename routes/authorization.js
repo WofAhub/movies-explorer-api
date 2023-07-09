@@ -1,14 +1,20 @@
 // const база
 const router = require('express').Router();
 
+// const мидлвары валидация
+const {
+  validationLogin,
+  validationRegistration,
+} = require('../middlewares/validation');
+
 // const контроллер
 const {
   login,
-  register,
+  registration,
 } = require('../controllers/users');
 
 // роуты
-router.post('/signin', login);
-router.post('/signup', register);
+router.post('/signin', validationLogin, login);
+router.post('/signup', validationRegistration, registration);
 
 module.exports = router;

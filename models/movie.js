@@ -1,5 +1,6 @@
 // const база
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 // схема фильма
 const movieSchema = new mongoose.Schema({
@@ -16,7 +17,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   year: {
-    type: String,
+    type: Number,
     required: true,
   },
   description: {
@@ -26,14 +27,29 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
+    validate: {
+      validator: (string) => {
+        validator.isURL(string);
+      },
+    },
   },
   trailerLink: {
     type: String,
     required: true,
+    validate: {
+      validator: (string) => {
+        validator.isURL(string);
+      },
+    },
   },
   thumbnail: {
     type: String,
     required: true,
+    validate: {
+      validator: (string) => {
+        validator.isURL(string);
+      },
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

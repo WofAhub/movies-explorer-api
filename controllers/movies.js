@@ -1,16 +1,18 @@
 // const база
+const mongoose = require('mongoose');
 const Movie = require('../models/movie');
 
 // const ошибки
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-const ValidationMongooseError = require('../errors/ValidationMongooseError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
 // получение всех фильмов
 module.exports.getMovies = (req, res, next) => {
+  const owner = req.user._id;
+
   Movie
-    .find({})
+    .find({ owner })
     .populate('owner')
     .then((movies) => {
       res
@@ -54,24 +56,37 @@ module.exports.uploadMovie = (req, res, next) => {
       owner: req.user._id,
     })
     .then((movie) => {
+      movie
+        .populate('owner');
       res
         .status(200)
         .send(movie);
     })
     .catch((err) => {
-      ValidationMongooseError(err, next);
+      if (err instanceof mongoose.Error.ValidationError) {
+        const errorFields = Object.keys(err.errors);
+        const errorMessage = err.errors[errorFields[0]].message;
+
+        next(new ValidationError(errorMessage));
+      } else {
+        next(err);
+      }
     });
 };
 
 // удаление фильма
 module.exports.deleteMovie = (req, res, next) => {
+  const { movieId } = req.params;
+
   Movie
-    .findById(req.params.id)
+    .findById(movieId)
     .orFail(() => {
       throw new NotFoundError('👀 Фильм не найден');
     })
     .then((MovieThatIsBeingDeleted) => {
-      if (req.params.id === req.user._id) {
+      const idMovie = MovieThatIsBeingDeleted.owner.toString();
+      const idUser = req.user._id.toString();
+      if (idMovie === idUser) {
         Movie
           .deleteOne(MovieThatIsBeingDeleted)
           .then(() => {
@@ -80,7 +95,7 @@ module.exports.deleteMovie = (req, res, next) => {
               .send({ message: '❎ Фильм удалён' });
           });
       } else {
-        throw new ForbiddenError('❌ Вы не можете удалить фильм, добавленный не Вами');
+        throw new ForbiddenError('⛔ Вы не можете удалить фильм, добавленный не Вами');
       }
     })
     .catch((err) => {
