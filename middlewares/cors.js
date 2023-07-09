@@ -1,8 +1,8 @@
 const allowedCors = [
-  'http://wofamesto.nomoreparties.sbs',
-  'https://wofamesto.nomoreparties.sbs',
-  'http://api.wofamesto.nomoreparties.sbs',
-  'https://api.wofamesto.nomoreparties.sbs',
+  'http://wofamovies.nomoredomains.work',
+  'https://wofamovies.nomoredomains.work',
+  'http://api.wofamovies.nomoredomains.work',
+  'https://api.wofamovies.nomoredomains.work',
   'localhost:3000',
 ];
 
