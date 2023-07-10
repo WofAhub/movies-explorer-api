@@ -1,17 +1,17 @@
 // const база
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const validator = require('validator');
 
 // const ошибки
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const { EMAIL_REGEX } = require('../utils/config');
 
 // схема пользователя
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, 'В имени должно быть от 2-х символов до 30-ти. Сейчас меньше 2-х'],
+    maxlength: [30, 'В имени должно быть до 30-ти символов. Сейчас больше 30-ти'],
     required: true,
   },
   email: {
@@ -19,9 +19,8 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
     validate: {
-      validator: (string) => {
-        validator.isEmail(string);
-      },
+      validator: (email) => EMAIL_REGEX.test(email),
+      message: 'Email не соответвует стандарту',
     },
   },
   password: {

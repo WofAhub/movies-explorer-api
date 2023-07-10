@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const Movie = require('../models/movie');
 
 // const ошибки
-const NotFoundError = require('../errors/NotFoundError');
-const ValidationError = require('../errors/ValidationError');
-const ForbiddenError = require('../errors/ForbiddenError');
+const {
+  NotFoundError,
+  ValidationError,
+  ForbiddenError,
+} = require('../utils/errors');
 
 // получение всех фильмов
 module.exports.getMovies = (req, res, next) => {

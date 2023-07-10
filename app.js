@@ -7,23 +7,22 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
 // const мидлвары
-const authMiddleware = require('./middlewares/authMiddleware');
 const limiter = require('./middlewares/rateLimiter');
 const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
-
-// const utils
-const { DATABASE_URL } = require('./utils/const');
-
-// const роуты
-const usersAndMoviesRoutes = require('./routes/routes');
-const authAndRegRouter = require('./routes/authorization');
-// const роут ошибка 404
-const error404 = require('./routes/error404');
+const config = require('./utils/config');
 
 // const сервер
-const { PORT = 3000 } = process.env;
+const {
+  PORT = config.PORT,
+  DATABASE_URL = config.DATABASE_URL,
+} = process.env;
+
+// const роуты
+const routes = require('./routes/index');
+
+// const сервер
 const app = express();
 
 // app.use база
@@ -45,17 +44,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-// app.use логин и регистрация
-app.use(authAndRegRouter);
-
-// app.use защита авторизацией
-app.use(authMiddleware);
-
-// app.use роуты юзеров и фильмов
-app.use(usersAndMoviesRoutes);
-
-// app.use ошибка 404
-app.use(error404);
+// app.use роуты
+app.use(routes);
 
 // логгер ошибок
 app.use(errorLogger);

@@ -8,13 +8,15 @@ const User = require('../models/user');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 // const ошибки
-const MONGO_DUBLICATE_ERROR = 11000;
-const NotFoundError = require('../errors/NotFoundError');
-const ValidationError = require('../errors/ValidationError');
-const DublicateError = require('../errors/DublicateError');
+const {
+  NotFoundError,
+  ValidationError,
+  DublicateError,
+  MONGO_DUBLICATE_ERROR,
+} = require('../utils/errors');
 
 // соль
-const { SAULT_ROUNDS } = require('../utils/const');
+const { SAULT_ROUNDS } = require('../utils/config');
 
 // регистрация
 module.exports.registration = (req, res, next) => {
@@ -84,22 +86,21 @@ module.exports.getMe = (req, res, next) => {
       .send(user))
 
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('❓ Некорректный id пользователя'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
 // обновление информации о пользователе
 module.exports.updateUser = (req, res, next) => {
-  const { name } = req.body;
+  const { name, email } = req.body;
 
   User
     .findByIdAndUpdate(
       req.user._id,
-      { name },
+      {
+        name,
+        email,
+      },
       {
         new: true,
         runValidators: true,
