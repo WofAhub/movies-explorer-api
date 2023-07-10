@@ -118,6 +118,8 @@ module.exports.updateUser = (req, res, next) => {
         const errorMessage = err.errors[errorFields[0]].message;
 
         next(new ValidationError(errorMessage));
+      } else if (err.code === MONGO_DUBLICATE_ERROR) {
+        next(new DublicateError('Поле Email повторяет текущий email'));
       } else {
         next(err);
       }
