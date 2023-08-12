@@ -58,7 +58,7 @@ const validationUploadMovie = celebrate({
       .messages(number),
     year: Joi.number().required()
       .messages(number),
-    description: Joi.string().required().min(2).max(150)
+    description: Joi.string().required().min(2)
       .messages(description),
     image: Joi.string().required().uri().regex(URL_REGEX)
       .messages(link),
